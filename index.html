@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090b35">
+<title>SoulLink</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090b35;color:#fff;font:16px Arial,sans-serif}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.page{max-width:520px;margin:auto;min-height:100vh;padding:22px 18px 90px}
+.welcome{text-align:center;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:30px 20px;background:linear-gradient(180deg,#090b3520,#090b35 58%),url('https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80') center top/100% 57% no-repeat}
+.logo{font-size:38px;font-weight:900;letter-spacing:2px;background:linear-gradient(90deg,#fff,#c14bff,#168dff);color:transparent;background-clip:text}
+.tag{font-size:11px;letter-spacing:4px;color:#c5bfff}
+h1{font-size:35px;line-height:1.1}
+.pink{background:linear-gradient(90deg,#358cff,#f12bc6);color:transparent;background-clip:text}
+p{line-height:1.5;color:#d4d7f6}
+.btn{display:block;width:100%;border:0;border-radius:28px;padding:15px;margin:12px 0;background:linear-gradient(100deg,#7138ff,#f126c4);color:white;font-weight:bold}
+.outline{background:transparent;border:2px solid #9c43ff}
+.panel{background:#151943;border:1px solid #343b70;border-radius:18px;padding:16px;margin:14px 0}
+input,textarea{width:100%;padding:13px;border-radius:10px;border:1px solid #484d80;background:#0d123b;color:white;margin:6px 0 14px}
+label{font-size:14px;font-weight:bold}
+.avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #d338ff;display:block;margin:12px auto}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#101438;display:flex;justify-content:space-around;padding:10px 2px;gap:2px;border-top:1px solid #373c70}
+.nav button{background:none;border:0;color:#d5d7fa;font-size:11px;padding:5px}
+.nav span{display:block;font-size:20px;margin-bottom:4px}
+.cardpic{width:100%;height:200px;object-fit:cover;border-radius:12px}
+.small{font-size:12px;color:#bfc5ee}
+</style>
+</head>
+<body>
+
+<section id="welcome" class="welcome">
+<div class="logo">♡ SOULLINK</div>
+<div class="tag">CONNECTION, AT YOUR PACE</div>
+<h1>Find your people.<br><span class="pink">Build your connection.</span></h1>
+<p>Make room for the people who feel like your kind of people — for dating, friendship and everything in between.</p>
+<button class="btn" onclick="auth('signup')">Create your account</button>
+<button class="btn outline" onclick="auth('login')">I already have an account</button>
+<p class="small">Genuine connections start with being yourself.</p>
+</section>
+
+<section id="auth" class="page hidden">
+<button class="btn outline" onclick="show('welcome')">← Back</button>
+<h1 id="authTitle">Create your account</h1>
+<p>Start building genuine connections.</p>
+<form id="authForm">
+<div id="nameBox"><label>Full name</label><input id="name" placeholder="Your name" required></div>
+<label>Email address</label><input id="email" type="email" placeholder="you@example.com" required>
+<label>Phone number</label><input id="phone" type="tel" placeholder="+254..." required>
+<label>Password</label><input id="password" type="password" minlength="8" placeholder="At least 8 characters" required>
+<div id="confirmBox"><label>Confirm password</label><input id="confirm" type="password" minlength="8" placeholder="Repeat password"></div>
+<div id="photoBox"><label>Profile picture</label><input id="photo" type="file" accept="image/*"><img id="preview" class="avatar hidden" alt="Picture preview"></div>
+<button class="btn" id="submit" type="submit">Create account</button>
+</form>
+<p id="error"></p>
+<p class="small">Demo only: no real email or SMS verification. Do not enter a real password.</p>
+</section>
+
+<section id="app" class="page hidden">
+<div class="logo" style="font-size:27px">SOULLINK</div>
+<main id="content"></main>
+</section>
+
+<nav id="nav" class="nav hidden">
+<button onclick="tab('home')"><span>⌂</span>Home</button>
+<button onclick="tab('discover')"><span>♡</span>Discover</button>
+<button onclick="tab('likes')"><span>💞</span>Likes</button>
+<button onclick="tab('messages')"><span>✉</span>Messages</button>
+<button onclick="tab('groups')"><span>◎</span>Groups</button>
+<button onclick="tab('profile')"><span>☺</span>Profile</button>
+</nav>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY='soullinkDemo';
+let data={user:null,likes:[],matches:[],chats:{},joined:[],passed:[]};
+let mode='signup',picture='';
+let people=[
+{id:1,name:'Amani',age:25,city:'Nairobi',bio:'Music, good conversations and weekend adventures.',interests:'Music · Travel · Coffee'},
+{id:2,name:'Brian',age:27,city:'Kisumu',bio:'Here to meet genuine people and laugh a lot.',interests:'Fitness · Movies · Food'},
+{id:3,name:'Zuri',age:24,city:'Nakuru',bio:'Book lover and nature explorer.',interests:'Books · Nature · Art'}
+];
+try{data={...data,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){alert('Storage full. Please use a smaller profile picture.')}}
+function show(id){['welcome','auth','app'].forEach(x=>$(x).classList.toggle('hidden',x!==id));$('nav').classList.toggle('hidden',id!=='app')}
+function auth(m){mode=m;picture='';show('auth');$('authTitle').textContent=m==='signup'?'Create your account':'Welcome back';$('submit').textContent=m==='signup'?'Create account':'Sign in';$('nameBox').classList.toggle('hidden',m==='login');$('confirmBox').classList.toggle('hidden',m==='login');$('photoBox').classList.toggle('hidden',m==='login');$('name').required=m==='signup';$('confirm').required=m==='signup';$('error').textContent=''}
+$('photo').onchange=e=>{let f=e.target.files[0];if(!f)return;if(f.size>700000){$('error').textContent='Choose a picture under 700 KB.';return}let r=new FileReader();r.onload=()=>{picture=r.result;$('preview').src=picture;$('preview').classList.remove('hidden')};r.readAsDataURL(f)};
+$('authForm').onsubmit=e=>{e.preventDefault();let email=$('email').value.trim().toLowerCase(),phone=$('phone').value.trim(),pw=$('password').value;
+if(mode==='signup'){if(pw!==$('confirm').value){$('error').textContent='Passwords do not match.';return}data.user={name:$('name').value.trim(),email,phone,pw,picture,bio:'',city:'',interests:''}}
+else if(!data.user||data.user.email!==email||data.user.phone!==phone||data.user.pw!==pw){$('error').textContent='Details do not match this device’s demo account. Create an account first if needed.';return}
+save();show('app');tab('home')};
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function pic(u){return u?`<img class="avatar" src="${u}" alt="Profile picture">`:'<div class="avatar">☺</div>'}
+function tab(t){show('app');$('nav').classList.remove('hidden');let u=data.user||{};let c=$('content'),out='';
+if(t==='home')out=`<h1>Welcome, ${esc(u.name)} ✨</h1><p>Connection, at your pace.</p><div class="panel"><h2>Your next connection starts here</h2><p>Discover people, explore shared interests and build meaningful connections.</p><button class="btn" onclick="tab('discover')">Discover people</button></div><div class="panel">💞 Likes: ${data.likes.length}<br>🤝 Matches: ${data.matches.length}<br>✉ Conversations: ${Object.keys(data.chats).length}</div>`;
+if(t==='discover')out='<h1>Discover</h1><p>Meet people at your own pace.</p>'+people.filter(p=>!data.passed.includes(p.id)).map(p=>`<div class="panel"><h2>${esc(p.name)}, ${p.age}</h2><p>📍 ${esc(p.city)}</p><p>${esc(p.bio)}</p><span>${esc(p.interests)}</span><button class="btn outline" onclick="pass(${p.id})">Pass</button><button class="btn" onclick="like(${p.id})">♡ Like</button></div>`).join('')||'<p>No more profiles in this demo.</p>';
+if(t==='likes')out='<h1>Likes & Matches</h1><div class="panel"><h2>Likes sent</h2>'+data.likes.map(id=>{let p=people.find(x=>x.id===id);return p?`<p>${esc(p.name)} — Like sent</p>`:''}).join('')+'</div><div class="panel"><h2>Your matches</h2>'+data.matches.map(id=>{let p=people.find(x=>x.id===id);return p?`<p>${esc(p.name)} <button onclick="chat(${id})">Message</button></p>`:''}).join('')+`<button class="btn outline" onclick="matchBack()">Simulate like-back (demo)</button></div>`;
+if(t==='messages')out='<h1>Messages</h1>'+Object.keys(data.chats).map(id=>`<div class="panel"><button class="btn" onclick="chat(${id})">Open conversation</button></div>`).join('')+'<p>Messages in this demo stay on this device.</p>';
+if(t==='groups'){let groups=['Music & concerts','Books & ideas','Outdoors & travel','Food & coffee'];out='<h1>Communities</h1><p>Meet people through shared interests.</p>'+groups.map((g,i)=>`<div class="panel"><h3>${g}</h3><button class="btn outline" onclick="join(${i})">${data.joined.includes(i)?'Leave':'Join community'}</button></div>`).join('')}
+if(t==='profile')out=`<h1>Your Profile</h1><div class="panel">${u.picture?`<img class="avatar" src="${u.picture}" alt="Your picture">`:'<div class="avatar">☺</div>'}<h2>${esc(u.name)}</h2><p>${esc(u.email)}<br>${esc(u.phone)}</p></div><form id="pf" class="panel"><label>Display name</label><input id="pn" value="${esc(u.name)}" required><label>City</label><input id="city" value="${esc(u.city)}"><label>About me</label><textarea id="bio">${esc(u.bio)}</textarea><label>Interests</label><input id="interests" value="${esc(u.interests)}"><label>Change picture</label><input id="newphoto" type="file" accept="image/*"><button class="btn">Save profile</button></form><button class="btn outline" onclick="logout()">Sign out</button><p class="small">This prototype is not yet connected to a real user database.</p>`;
+c.innerHTML=out;
+if(t==='profile')$('pf').onsubmit=e=>{e.preventDefault();u.name=$('pn').value;u.city=$('city').value;u.bio=$('bio').value;u.interests=$('interests').value;let f=$('newphoto').files[0];function done(){data.user=u;save();tab('profile')}if(f){if(f.size>700000){alert('Choose a picture under 700 KB.');return}let r=new FileReader();r.onload=()=>{u.picture=r.result;done()};r.readAsDataURL(f)}else done()}
+}
+function like(id){if(!data.likes.includes(id))data.likes.push(id);save();alert('Like saved. It is not automatically a match.');tab('discover')}
+function pass(id){data.passed.push(id);save();tab('discover')}
+function matchBack(){if(!data.likes.length){alert('Like a profile first.');return}let id=data.likes[0];if(!data.matches.includes(id))data.matches.push(id);data.chats[id]=data.chats[id]||[];save();tab('likes');alert('Demo match created. No real person was notified.')}
+function chat(id){if(!data.matches.includes(id)){alert('Create a demo match first.');return}let p=people.find(x=>x.id===id);let c=$('content');c.innerHTML=`<button class="btn outline" onclick="tab('messages')">← Back</button><h1>Chat with ${esc(p?.name||'Connection')}</h1><div class="panel" id="chatbox">${(data.chats[id]||[]).map(m=>`<p>${m.mine?'You: ':'Them: '}${esc(m.text)}</p>`).join('')}</div><form id="chatform"><input id="msg" placeholder="Write a message..." required maxlength="500"><button class="btn">Send</button></form>`;$('chatform').onsubmit=e=>{e.preventDefault();data.chats[id]=data.chats[id]||[];data.chats[id].push({text:$('msg').value,mine:true});save();chat(id)}}
+function join(i){data.joined=data.joined.includes(i)?data.joined.filter(x=>x!==i):[...data.joined,i];save();tab('groups')}
+function logout(){data.user=null;save();show('welcome')}
+if(data.user){show('app');tab('home')}else show('welcome');
+</script>
+</body>
+</html>
